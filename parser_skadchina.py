@@ -137,13 +137,14 @@ def parser():
     """
     rubrics = get_rubrics()
     for rubric in rubrics:
+        db.create_file(rubric['name'] + '.xlsx')
         skladchini = get_skladchini(rubric['url'])
         for index, skladchina in enumerate(skladchini):
             skladchina_detail = get_skladchina(skladchina['url'])
             skladchina['rubric'] = rubric['name']
             skladchina_full = {**skladchina, **skladchina_detail}
             print('{} {}/{}'.format(rubric['name'], index, len(skladchini)))
-            db.add_skladchina(skladchina_full)
+            db.add_skladchina(skladchina_full, rubric['name'] + '.xlsx')
 
 
 if __name__ == '__main__':
