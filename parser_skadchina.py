@@ -78,7 +78,7 @@ def parse_skladchini(response: str) -> List[dict]:
                                'date': date,
                                'deposit': deposit,
                                'main': main,
-                               'rezerve': rezerve,
+                               #'rezerve': rezerve,
                                'views': views
                                })
     return skladchini

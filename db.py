@@ -24,6 +24,6 @@ def add_skladchina(data: dict, file_name):
     ws.cell(row=max_row+1, column=5).value = data['price']
     ws.cell(row=max_row+1, column=6).value = data['deposit']
     ws.cell(row=max_row+1, column=7).value = data['main']
-    ws.cell(row=max_row+1, column=8).value = data['rezerve']
-    ws.cell(row=max_row+1, column=9).value = data['views']
+    #ws.cell(row=max_row+1, column=8).value = data['rezerve']
+    ws.cell(row=max_row+1, column=8).value = data['views']
     wb.save(file_name)
