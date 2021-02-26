@@ -307,4 +307,13 @@ def parser_2():
 
 
 if __name__ == '__main__':
-    parser_2()
+    info = """Режимы работы:
+    1 - парсер всего форума
+    2 - парсер одной рубрики по ссылке
+    """
+    print(info)
+    mode = input('Введите режим работы (1/2): ')
+    if int(mode) == 1:
+        parser_1()
+    elif int(mode) == 2:
+        parser_2()

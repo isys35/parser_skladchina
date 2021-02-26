@@ -29,7 +29,10 @@ def add_skladchina(data: dict, file_name):
     views = float(data['views'].replace('.', ''))
     ws.cell(row=max_row + 1, column=5).value = views
     days_on_site = (datetime.now()-data['date']).days
-    ws.cell(row=max_row + 1, column=6).value = views/days_on_site
+    try:
+        ws.cell(row=max_row + 1, column=6).value = views/days_on_site
+    except ZeroDivisionError:
+        ws.cell(row=max_row + 1, column=6).value = 'Деление на 0'
     price = float(data['price'].replace(' руб', ''))
     ws.cell(row=max_row + 1, column=7).value = price
     deposit = float(data['deposit'].replace(' руб', ''))
