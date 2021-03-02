@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 from typing import List
 import db
 from requests import Session
-from urllib.parse import quote
 from datetime import datetime
 
 HOST = 'https://www.skladchina.biz/'
@@ -74,13 +73,6 @@ def int_value_from_ru_month(date_str):
     for k, v in RU_MONTH_VALUES.items():
         date_str = date_str.replace(k, str(v))
     return date_str
-
-
-# def login():
-#     url = 'https://www.skladchina.biz/login/login'
-#     data = 'login={}&password={}&remember=1&cookie_check=1&redirect=%2F&_xfToken='
-#     data = data.format(quote(config.EMAIL), quote(config.PASSWORD))
-#     session.post(url, data=data, headers=HEADERS_LOGIN)
 
 
 def sign_up(url, token, referer):
@@ -213,9 +205,7 @@ def parse_skladchina(response: str) -> dict:
     soup = BeautifulSoup(response, 'lxml')
     price = soup.select_one('dl.estcs-shopping-info-extra-tabs').select_one('dd').text
     hash_tags = [el.text for el in soup.select('.link.tag')]
-    # zapis_url = HOST + soup.select('.but_zapis')[-1].select_one('a')['href']
-    # token = soup.find("input", {"name": "_xfToken"})['value']
-    return {'price': price, 'hash_tags': hash_tags}  # {'price': price, 'zapis_url': zapis_url, 'xsrf_token': token}
+    return {'price': price, 'hash_tags': hash_tags}
 
 
 def get_rubrics() -> List[dict]:
@@ -245,16 +235,6 @@ def get_skladchini(rubric_url: str) -> List[dict]:
     return skladchini
 
 
-# def get_rekvizit_count_messages(url) -> int:
-#     """
-#     Получение кол-ва сообщений в реквизитах
-#     """
-#     session.headers = {}
-#     login()
-#     response = get_response(url)
-#     save_page(response)
-
-
 def get_skladchina(skladchina_url: str) -> dict:
     """
     Получение данных со страницы складчины
@@ -262,9 +242,6 @@ def get_skladchina(skladchina_url: str) -> dict:
     """
     response = get_response(skladchina_url)
     skladchina = parse_skladchina(response)
-    # rekvizit_url = parse_rekvizit_url(sign_response)
-    # print(rekvizit_url)
-
     return skladchina
 
 
