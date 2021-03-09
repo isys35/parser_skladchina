@@ -201,7 +201,6 @@ def parse_skladchina(response: str) -> dict:
     Парсер складчины с ответа на запрос
     склачина - {'наименованиее данных':'данные'}
     """
-    save_page(response)
     soup = BeautifulSoup(response, 'lxml')
     price = soup.select_one('dl.estcs-shopping-info-extra-tabs').select_one('dd').text
     hash_tags = [el.text for el in soup.select('.link.tag')]
@@ -225,14 +224,15 @@ def get_skladchini(rubric_url: str) -> List[dict]:
     response = get_response(rubric_url)
     max_page = parse_max_page(response)
     skladchini = parse_skladchini(response)
+    print(f'[INFO] Страница 1/{max_page}')
+    yield skladchini
     if max_page > 1:
         for page in range(2, max_page + 1):
             print(f'[INFO] Страница {page}/{max_page}')
             url_page = rubric_url + f'page-{page}'
             response_page = get_response(url_page)
             skladchini_from_page = parse_skladchini(response_page)
-            skladchini.extend(skladchini_from_page)
-    return skladchini
+            yield skladchini_from_page
 
 
 def get_skladchina(skladchina_url: str) -> dict:
@@ -251,14 +251,16 @@ def get_rubric_name(rubric_url: str) -> str:
     return soup.select_one('h1').text
 
 
-def parser(url_rubric, rubric_name):
+def parser(url_rubric, rubric_name, excel):
     skladchini = get_skladchini(url_rubric)
-    for index, skladchina in enumerate(skladchini):
-        skladchina_detail = get_skladchina(skladchina['url'])
-        skladchina['rubric'] = rubric_name
-        skladchina_full = {**skladchina, **skladchina_detail}
-        print('{} {}/{}'.format(rubric_name, index, len(skladchini)))
-        db.add_skladchina(skladchina_full, rubric_name + '.xlsx')
+    for skladchini_from_page in skladchini:
+        for index, skladchina in enumerate(skladchini_from_page):
+            skladchina_detail = get_skladchina(skladchina['url'])
+            skladchina['rubric'] = rubric_name
+            skladchina_full = {**skladchina, **skladchina_detail}
+            print('[INFO] {} {}/{}'.format(rubric_name, index, len(skladchini_from_page)))
+            excel.add_skladchina(skladchina_full)
+        excel.save()
 
 
 def parser_1():
@@ -267,9 +269,11 @@ def parser_1():
     парсер всего форума
     """
     rubrics = get_rubrics()
+    excel = db.Excel()
     for rubric in rubrics:
-        db.create_file(rubric['name'] + '.xlsx')
-        parser(rubric['url'], rubric['name'])
+        excel.file_name = rubric['name'] + '.xlsx'
+        excel.create_file()
+        parser(rubric['url'], rubric['name'], excel)
 
 
 def parser_2():
@@ -279,8 +283,10 @@ def parser_2():
     """
     url_rubric = input('Введите url рубрики: ')
     rubric_name = get_rubric_name(url_rubric)
-    db.create_file(rubric_name + '.xlsx')
-    parser(url_rubric, rubric_name)
+    excel = db.Excel()
+    excel.file_name = rubric_name + '.xlsx'
+    excel.create_file()
+    parser(url_rubric, rubric_name, excel)
 
 
 if __name__ == '__main__':
