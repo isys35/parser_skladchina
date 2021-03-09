@@ -4,6 +4,7 @@ from typing import List
 import db
 from requests import Session
 from datetime import datetime
+import traceback
 
 HOST = 'https://www.skladchina.biz/'
 HOST_2 = 'https://tor.skladchina.biz/'
@@ -296,7 +297,11 @@ if __name__ == '__main__':
     """
     print(info)
     mode = input('Введите режим работы (1/2): ')
-    if int(mode) == 1:
-        parser_1()
-    elif int(mode) == 2:
-        parser_2()
+    try:
+        if int(mode) == 1:
+            parser_1()
+        elif int(mode) == 2:
+            parser_2()
+    except Exception:
+        print(traceback.format_exc())
+        input('Нажмите любую кнопку')
